@@ -1,0 +1,15 @@
+{
+    "version": "1",
+    "packages": [
+        {
+            "path": "db/sqlc",
+            "name": "sqlc",
+            "schema": "db/migrations",
+            "queries": "db/queries",
+            "engine": "postgresql",
+            "emit_json_tags": true,
+            "emit_prepared_queries": true,
+            "emit_interface": true
+        }
+    ]
+}
