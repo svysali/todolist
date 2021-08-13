@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: build/Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "8080"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=todolist
+      - DB_PASS=supersecret
+      - DB_NAME=todolist
+    restart: unless-stopped  
+    networks: 
+      - new
+      - test
+
+  db:
+    image: postgres:${POSTGRES_VERSION}-alpine
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=todolist
+      - POSTGRES_PASSWORD=supersecret
+      - POSTGRES_DB=todolist
+      - PGDATA=/var/lib/postgres/data
+    restart: always
+    networks: 
+      - new
+    volumes: 
+      - db-data:/var/lib/postgres/data
+
+  test:
+    image: busybox:1.33
+    depends_on:
+      - app
+    environment:
+      - CREATE_URL=app:8080/todo
+    volumes:
+      - ./test_create.sh:/test/test_create.sh
+    command: ["/bin/sh", "-c", "/test/test_create.sh"]
+    profiles: ["test"]
+    networks:
+      - test  
+
+networks:
+  new:
+  test:    
+    
+volumes:
+  db-data:  
